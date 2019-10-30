@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>51job数据展示页</title>
+		<!-- 引入样式 -->
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+	</head>
+	<body>
+
+		<div id="app">
+
+			<template>
+				<el-table :data="jobs" border style="width: 100%">
+					<el-table-column type="index" label="序号" width="60" align="center">
+					</el-table-column>
+					<el-table-column prop="name" label="职位" width="180">
+					</el-table-column>
+					<el-table-column prop="company" label="公司">
+					</el-table-column>
+					<el-table-column prop="address" label="地址" width="200">
+					</el-table-column>
+					<el-table-column prop="salary" label="薪资" width="100">
+					</el-table-column>
+					<el-table-column prop="date" label="日期" width="80">
+					</el-table-column>
+				</el-table>
+				<el-pagination background @size-change="changeSize" @current-change="changePage" :current-page="currentPage"
+				 :page-sizes="[5, 10, 20, 40]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
+				</el-pagination>
+			</template>
+
+		</div>
+
+
+	</body>
+	<script src="https://cdn.staticfile.org/vue/2.6.10/vue.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js" type="text/javascript" charset="utf-8"></script>
+	<!-- 引入组件库 -->
+	<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+	<script type="text/javascript">
+		new Vue({
+			el: "#app",
+			data: {
+				jobs: [],
+				currentPage: 1,
+				pageSize: 20,
+				total: 0
+			},
+			methods: {
+				changeSize: function(size) {
+					this.pageSize = size
+					this.currentPage = 1
+					axios
+						.get('http://localhost:1928/demo-51job/job?method=page', {
+							params: {
+								currentPage: this.currentPage,
+								pageSize: this.pageSize
+							}
+						})
+						.then(response => {
+							this.jobs = response.data.dataList,
+							this.total = response.data.totalRows
+						})
+						.catch(function(error) { // 请求失败处理
+							console.log(error);
+						});
+				},
+				changePage: function(page) {
+					this.currentPage = page
+					axios
+						.get('http://localhost:1928/demo-51job/job?method=page', {
+							params: {
+								currentPage: this.currentPage,
+								pageSize: this.pageSize
+							}
+						})
+						.then(response => {
+							this.jobs = response.data.dataList,
+							this.total = response.data.totalRows
+						})
+						.catch(function(error) { // 请求失败处理
+							console.log(error);
+						});
+				}
+			},
+			mounted() {
+				axios
+					.get('http://localhost:1928/demo-51job/job?method=page', {
+						params: {
+							currentPage: this.currentPage,
+							pageSize: this.pageSize
+						}
+					})
+					.then(response => {
+						this.jobs = response.data.dataList,
+						this.total = response.data.totalRows
+					})
+					.catch(function(error) { // 请求失败处理
+						console.log(error);
+					});
+			}
+		})
+	</script>
+</html>
