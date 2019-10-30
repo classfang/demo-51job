@@ -1,9 +1,8 @@
 package org.java1928.dao;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.java1928.entity.Job;
 
@@ -48,4 +47,82 @@ public class JobDao {
 		
 	}
 
+	public List<Job> select() throws SQLException {
+
+		Connection conn = DriverManager.getConnection(url, username, password);
+
+		String sql = "select * from job";
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		ResultSet rs = pstmt.executeQuery();
+
+		List<Job> jobs = new ArrayList<>();
+		while (rs.next()) {
+			Job job = Job.builder().id(rs.getLong("id"))
+					.name(rs.getString("name"))
+					.company(rs.getString("company"))
+					.address(rs.getString("address"))
+					.salary(rs.getString("salary"))
+					.date(rs.getString("date"))
+					.build();
+			jobs.add(job);
+		}
+
+		rs.close();
+		pstmt.close();
+		conn.close();
+
+		return jobs;
+
+	}
+
+	public Long count() throws SQLException {
+
+		Connection conn = DriverManager.getConnection(url, username, password);
+
+		String sql = "select count(id) as counts from job";
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+
+		ResultSet rs = pstmt.executeQuery();
+
+		Long result = 0L;
+		if (rs.next())
+			result = rs.getLong("counts");
+
+		rs.close();
+		pstmt.close();
+		conn.close();
+
+		return result;
+
+	}
+
+	public List<Job> selectPage(Long startIndex, Long pageSize) throws SQLException {
+
+		Connection conn = DriverManager.getConnection(url, username, password);
+
+		String sql = "select * from job limit ?,?";
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		pstmt.setLong(1, startIndex);
+		pstmt.setLong(2, pageSize);
+		ResultSet rs = pstmt.executeQuery();
+
+		List<Job> jobs = new ArrayList<>();
+		while (rs.next()) {
+			Job job = Job.builder().id(rs.getLong("id"))
+					.name(rs.getString("name"))
+					.company(rs.getString("company"))
+					.address(rs.getString("address"))
+					.salary(rs.getString("salary"))
+					.date(rs.getString("date"))
+					.build();
+			jobs.add(job);
+		}
+
+		rs.close();
+		pstmt.close();
+		conn.close();
+
+		return jobs;
+
+	}
 }

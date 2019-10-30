@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.java1928.dao.JobDao;
 import org.java1928.entity.Job;
+import org.java1928.entity.PageBean;
 import org.seimicrawler.xpath.JXDocument;
 import org.seimicrawler.xpath.JXNode;
 
@@ -67,4 +68,27 @@ public class JobService {
 		return counts;
 	}
 
+	public List<Job> query() throws SQLException {
+
+		JobDao jobDao = new JobDao();
+
+		return jobDao.select();
+
+	}
+
+	public PageBean<Job> page(Long currentPage, Long pageSize) throws SQLException {
+
+		JobDao jobDao = new JobDao();
+
+		Long totalRows = jobDao.count();
+
+		PageBean<Job> page = new PageBean<>(currentPage, pageSize, totalRows);
+
+		List<Job> jobs = jobDao.selectPage(page.getStartIndex(), page.getPageSize());
+
+		page.setDataList(jobs);
+
+		return page;
+
+	}
 }
