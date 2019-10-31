@@ -8,9 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-// http://localhost:1928/demo-51job/job?method=page&currentPage=1&pageSize=20
-@WebFilter("/job")
-public class RedisFilter implements Filter {
+@WebFilter("/*")
+public class LoginFilter implements Filter {
     public void destroy() {
 
     }
@@ -19,19 +18,17 @@ public class RedisFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) resp;
 
-        String method = request.getParameter("method");
-        if (method != null && method.equals("page")) {
-            Jedis jedis = new Jedis("localhost", 6379);
-            jedis.auth("123456");
+        String token = request.getHeader("token");
 
-            String key = request.getQueryString();
-            String value = jedis.get(key);
-            if (value != null) {
-                System.out.println("从redis取数据");
-                response.getWriter().print(value);
-                return;
-            }
+        Jedis jedis = new Jedis("localhost", 6379);
+        jedis.auth("123456");
+        String value = jedis.get(token);
+
+        if (value == null) {
+            response.getWriter().print("你还没有登录");
+            return;
         }
+
         chain.doFilter(req, resp);
     }
 
