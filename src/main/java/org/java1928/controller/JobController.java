@@ -16,6 +16,7 @@ import org.java1928.entity.PageBean;
 import org.java1928.service.JobService;
 
 import com.alibaba.fastjson.JSON;
+import redis.clients.jedis.Jedis;
 
 /**
  * 职位信息控制器
@@ -25,7 +26,6 @@ public class JobController extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
         String method = request.getParameter("method");
         switch (method) {
             case "init":
@@ -54,6 +54,12 @@ public class JobController extends HttpServlet {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        String key = request.getQueryString();
+        Jedis jedis = new Jedis("localhost", 6379);
+        jedis.auth("123456");
+        jedis.set(key, JSON.toJSONString(page, true));
+        jedis.expire(key, 60);
 
         try {
             response.getWriter().print(JSON.toJSONString(page, true));

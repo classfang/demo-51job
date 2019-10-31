@@ -66,6 +66,13 @@
 			<version>1.2.58</version>
 		</dependency>
 
+		<!-- jedis -->
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>2.9.0</version>
+		</dependency>
+
 	</dependencies>
 	<build>
 		<finalName>demo-51job</finalName>
